@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .order { margin-bottom: 10px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Панель управления</h1>
+    <p>Добро пожаловать, {{ session['user'] }}! <a href="{{ url_for('logout') }}">Выйти</a></p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <h2>Создать заказ</h2>
+    <form method="POST">
+        <label for="client_name">Имя клиента:</label><br>
+        <input type="text" id="client_name" name="client_name" value="{{ client_name }}" required><br><br>
+        <label for="area">Площадь объекта:</label><br>
+        <input type="number" step="0.01" id="area" name="area" value="{{ area }}" required><br><br>
+        <label>Материалы:</label><br>
+        {% for material, price in materials.items() %}
+            <input type="checkbox" id="{{ material }}" name="materials" value="{{ material }}"
+                   {% if material in selected_materials %}checked{% endif %}>
+            <label for="{{ material }}">{{ material }} ({{ price }} руб.)</label><br>
+        {% endfor %}
+        <br>
+        <button type="submit" name="action" value="calculate">Рассчитать стоимость</button>
+        <button type="submit" name="action" value="create">Создать заказ</button>
+    </form>
+
+    {% if total_cost is not none %}
+        <p><strong>Общая стоимость:</strong> {{ total_cost }} руб.</p>
+    {% endif %}
+
+    <h2>Список заказов</h2>
+    {% for order in orders %}
+        <div class="order">
+            <p><strong>Клиент:</strong> {{ order.client_name }}</p>
+            <p><strong>Площадь:</strong> {{ order.area }}</p>
+            <p><strong>Материалы:</strong> {{ order.materials }}</p>
+            <p><strong>Стоимость:</strong> {{ order.total_cost }} руб.</p>
+            {% if session['user'] == 'admin' %}
+                <form method="POST" style="display:inline;">
+                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                    <button type="submit" name="action" value="delete">Удалить</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endfor %}
+</body>
+</html>

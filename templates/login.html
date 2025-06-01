@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Авторизация</h1>
+
+    <!-- Отображение сообщения об ошибке -->
+    {% if error_message %}
+        <p class="error">{{ error_message }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <label for="login">Логин:</label><br>
+        <input type="text" id="login" name="login" required><br><br>
+        <label for="password">Пароль:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+        <button type="submit">Войти</button>
+    </form>
+</body>
+</html>
